@@ -1,0 +1,76 @@
+<p>{{ dbName }}</p>
+<div class="wrapper">
+    <div class="leftBlock">
+        <div class="header">
+            <a href="#">
+              <div>Perfomance plots</div>  
+            </a>
+            
+            <a href="#">
+               <div>DDL</div> 
+            </a>
+            
+            <a href="#">
+                <div>StreamsMon</div>
+            </a>
+            
+            <a href="#">
+                <div>Session manager</div>
+            </a>
+            
+        </div>
+        
+        <div class="metrics">
+            <h4>DB metrics overview</h4>
+            <table>
+                <tr [ngSwitch]="numberOfNodes">
+                    <th>Metric</th>
+                    <th>Node1</th>
+                    <th>Node2</th>
+                    <th *ngSwitchCase=3>Node3</th>
+                    <th *ngSwitchCase=4>Node3</th>
+                    <th *ngSwitchCase=4>Node4</th>
+                </tr>
+                
+                
+                <tr *ngFor="let row of dbMetric.items">
+                    <td class="_11">{{ row.metric }}</td>
+                    <td class="_12" *ngFor="let key of keys">{{ row[key] }}</td>
+                </tr>
+                <tr>
+                    <td class="_11">Jobs</td>
+                    <td [style]="jobsStyles()" [colSpan]="numberOfNodes">Running: {{jobsInfo.items[0].running_jobs}} Failed: {{jobsInfo.items[0].failed_jobs}} Total: {{jobsInfo.items[0].total_jobs}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="session">
+            <h4>Session distribution</h4>
+            <table>
+                <th>Schema</th>
+            <th>Node1</th>
+            <th>Node2</th>
+            <th>Total</th>
+            <tr *ngFor="let row of sessionDistr.items">
+                <td class="_11">{{row.username}}</td>
+                <td class="_12">{{row.node1}}</td>
+                <td class="_12">{{row.node2}}</td>
+                <td class="_11">{{row.to_display}}</td>
+            </tr>
+            </table>
+            <ul class="sessionPages">
+                <div (сlick)="showPage()" *ngFor="let page of sessionPagesArray">{{page}}</div>
+                <div (click)="showPage()">button</div>
+            </ul>
+            
+        </div>
+
+        <div class="volume">
+
+        </div>
+    </div>
+    <div class="rightBlock">
+
+    </div>
+</div>
+

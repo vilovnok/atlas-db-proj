@@ -1,0 +1,214 @@
+Documentation for offline assembly of the application image and 
+running the application on the lxplus machine.
+
+<--- Start --->
+
+****
+
+The work takes place on the lxplus machine .
+Used files such as :
+ - ng-deployment.yaml
+ - .gitlab-ci.yml
+
+****
+
+
+<--- Installing all about Docker --->
+
+[root@richie ~]# sudo yum install -y yum-utils
+
+[root@richie ~]# sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+[root@richie ~]#  sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+[root@richie ~]# sudo dnf install docker-ce --nobest --allowerasing -y
+
+[root@richie ~]# sudo systemctl start docker
+
+[root@richie ~]# sudo systemctl enable docker 
+
+[root@richie ~]# docker images // ( check )
+
+[root@richie ~]# sudo docker search centos
+
+[root@richie ~]# sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+[root@richie ~]# sudo chmod +x /usr/local/bin/docker-compose
+
+[root@richie ~]# docker-compose --version // ( check )
+
+
+
+<--- Installing all about gitlab-runner --->
+
+[root@richie ~]# curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh" | sudo bash
+
+[root@richie ~]# sudo yum install gitlab-runner
+
+
+
+<--- Create gitlab-runner --->
+
+[root@richie ~]# gitlab-runner register
+
+!!! An example of what you will encounter in the future !!!
+
+
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+https://gitlab.cern.ch/  			|| you need to enter the url of the project, which is located on the path Settings -> CI/CD -> Expand "Runners" ||
+Enter the registration token:
+GR13489415QQzws14VJyCeUjpRspv // enter a project token 
+Enter a description for the runner:
+[richie.cern.ch]: main
+Enter tags for the runner (comma-separated):
+run 
+Enter optional maintenance note for the runner:
+                                                
+Registering runner... succeeded                     runner=GR13489415QQzws14
+Enter an executor: ssh, virtualbox, instance, docker-ssh+machine, kubernetes, custom, docker, docker-ssh, parallels, shell, docker+machine:
+shell                                           
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+
+Configuration (with the authentication token) was saved in "/etc/gitlab-runner/config.toml"
+
+
+
+<--- Installing nodejs --->
+
+[root@richie ~]# sudo dnf module list nodejs
+
+[root@richie ~]# sudo dnf module enable nodejs:12
+
+[root@richie ~]# sudo dnf install nodejs
+
+[root@richie ~]# node --version  ( check )
+
+
+
+<--- Authorization docker for gitlab-registry --->
+
+[root@richie ~]# docker login gitlab-registry.cern.ch
+
+!!! An example of what you will encounter in the future !!!
+
+
+Username: rgurtsie
+Password:
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+
+<--- --->
+
+
+[root@richie ~]# sudo usermod -aG docker gitlab-runner
+
+[root@richie ~]# sudo su gitlab-runner
+
+!!! An example of what you will encounter in the future !!!
+
+bash-4.4$ docker login gitlab-registry.cern.ch
+Username: rgurtsie
+Password:
+WARNING! Your password will be stored unencrypted in /home/gitlab-runner/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+bash-4.4$ exit
+
+
+***
+
+Creating a repository with the project in gitlab. 
+Then we use "Dockerfile" and ".dockerignore" in the root of the project. 
+Next, we create "gitlab-ci.yml" in the root of the project. 
+
+                                 <--- !!! Attention !!! --->
+
+"Available shared runners" are used for "dependencies" and "build" that are in "gitlab-ci.yml".
+ For "deploy_image", the runner that we created above is used.
+ When we create an image of our project, then we will insert it into "ng-deployment.yaml".
+
+***
+
+
+<--- Installing KVM Hypervisor --->
+
+[root@richie ~]# sudo yum -y install epel-release
+
+[root@richie ~]# sudo yum -y install libvirt qemu-kvm virt-install virt-top libguestfs-tools bridge-utils
+
+[root@richie ~]# sudo systemctl start libvirtd
+
+[root@richie ~]# sudo systemctl enable libvirtd
+
+[root@richie ~]# systemctl status libvirtd
+
+[root@richie ~]# sudo usermod -a -G libvirt $(whoami)
+
+[root@richie ~]# sudo vi /etc/libvirt/libvirtd.conf
+
+[root@richie ~]# sudo systemctl restart libvirtd.service
+
+
+
+<--- Installing minikube --->
+
+[root@richie ~]# sudo yum -y install wget
+
+[root@richie ~]# wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+[root@richie ~]# chmod +x minikube-linux-amd64
+
+[root@richie ~]# sudo mv minikube-linux-amd64 /usr/local/bin/minikube
+
+[root@richie ~]# minikube version
+
+[root@richie ~]# curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s
+ https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+[root@richie ~]# chmod +x kubectl
+
+[root@richie ~]# sudo mv kubectl  /usr/local/bin/
+
+[root@richie ~]# kubectl version --client -o json
+
+[root@richie ~]# minikube start    || if it causes an error, then run the command minikube start --force ||
+
+[root@richie ~]# minikube status ( check )
+
+[root@richie ~]# kubectl get pods ( check )
+
+<--- Create a file for kubectl and run --->
+
+[root@richie ~]# vim ng-deployment.yaml
+
+Using the file ng-deployment.yaml 
+
+[root@richie ~]# kubectl apply -f ng-deployment.yaml      || updating for pods ||
+
+[root@richie ~]# kubectl port-forward svc/angular-service 1111:80
+
+
+<--- You have launched a project on the lxplus machine --->
+<--- it's done --->
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+

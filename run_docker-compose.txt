@@ -1,0 +1,8 @@
+<---    CREATE AND RUN  IMAGES --->
+
+1. Go to the file "dbmon" and open the terminal.
+
+2. We sequentially type the codes in the terminal:
+   - docker-compose up
+   
+

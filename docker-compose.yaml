@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  docker-frontend:
+    build: 
+      context: dbmon-new-master
+      dockerfile: Dockerfile
+    ports:
+      - '4200:80'
+    volumes:
+      - ./dbmon-new-master:/frontend/src
+
+  docker-backend:
+    build: 
+      context: RestAPI
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+
+
+
+
+

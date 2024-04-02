@@ -1,0 +1,11 @@
+<div class="topBar">
+    <a [routerLink]="''"><img class="logo" src="assets/atlas_logo.png"></a>
+    <ul>
+        <a class="db" [routerLink]="''">HOME</a>
+        <a class="db" *ngFor="let db of dbNames" [routerLink]="['/db', db.dbname]">{{ db.dbname }}</a>
+        <a class="db" [routerLink]="'test_request'">TEST REQUEST</a>
+    </ul>
+    <span>Database & Application monitoring</span>
+</div>
+
+

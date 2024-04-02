@@ -1,0 +1,7 @@
+<---    CREATE AND RUN THE IMAGE --->
+
+1. Go to the file "dbmon-new-master" and open the terminal.
+
+2. We sequentially type the codes in the terminal:
+  -  docker build -t img-web .
+  -  docker run -p 4200:4200 img-web

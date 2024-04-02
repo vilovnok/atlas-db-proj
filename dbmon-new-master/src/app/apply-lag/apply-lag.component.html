@@ -1,0 +1,15 @@
+<h6>ATLR GG apply lag</h6>
+<table>
+    <tr>
+    <th>Source</th>
+    <th>Lag</th>
+    <th>Status</th>
+    <th>Snapshot time</th>
+</tr>
+<tr *ngFor="let lag of applyLagInfo.items">
+    <td class="_11">{{ lag.source }}</td>
+    <td [style]="secondLagAlert(lag.apply_lag)">{{ lag.apply_lag }} sec.</td>
+    <td [style]="statusAlert(lag.status)">{{ lag.status }}</td>
+    <td class="_11">{{ lag.snapshot_time }}</td>
+</tr>
+</table>

@@ -1,0 +1,20 @@
+<h4><a href="">{{ dbName }}</a><button class="dbState" [style]="dbIsUpStyle()">{{ dbIsUp.message }}</button></h4>
+<table>
+    <tbody><tr [ngSwitch]="numberOfNodes">
+        <th>Metric</th>
+        <th>Node1</th>
+        <th>Node2</th>
+        <th *ngSwitchCase="3">Node3</th>
+        <th *ngSwitchCase="4">Node3</th>
+        <th *ngSwitchCase="4">Node4</th>
+    </tr>
+    <tr *ngFor="let row of dbMetrics">
+        <td class="_11">{{ row.metric }}</td><td class="_12" *ngFor="let key of reducedKeys">{{ row[key] }}</td>
+    </tr>
+    <tr *ngIf="jobsInfo.items[0].total_jobs != 0"><td class="_11">Jobs</td><td [colSpan]="numberOfNodes" [style]="jobsStyle()">Running: {{ jobsInfo.items[0].running_jobs }} Failed: {{ jobsInfo.items[0].failed_jobs }} Total {{ jobsInfo.items[0].total_jobs }}</td></tr>
+    <tr *ngIf="(dbName == 'atonr_adg' || dbName == 'adcr_adg') && dbIsUp.status">
+        <td class="_11">Applay lag</td>
+        <td [colSpan]="numberOfNodes" [style]="lagAlert()">{{ applyLagInfo.items[0].apply_lag }} sec.</td>
+    </tr></tbody>
+    
+</table>

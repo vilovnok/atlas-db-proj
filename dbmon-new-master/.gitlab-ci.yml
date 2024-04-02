@@ -1,0 +1,56 @@
+stages:
+  - dependencies
+  - build
+  - deploy_image
+  
+
+install_dependencies:
+  stage: dependencies
+  script:
+    - npm install
+  only:
+    - master
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+     
+
+
+
+build_image:
+  stage: build
+  script:
+    - npm link @angular/cli@12.1.4
+    - npm run build
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/dist
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+    policy: pull
+    
+  
+
+push-docker-registry:
+  stage: deploy_image
+  only:
+    - master
+  script:
+
+    - npm install --save-dev @angular-devkit/build-angular
+    - docker build -t enter_your_container_registry  . 
+    - docker login gitlab-registry.cern.ch -u your_login -p your_password
+    - docker push enter_your_container_registry
+
+  tags:
+    - run # the tag must match the "Available specific runners" tag
+
+
+
