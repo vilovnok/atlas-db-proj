@@ -1,1 +1,0 @@
-This repository contains instructions for running RestAPI and web app images, and docker compose. We have also added a new page to the web application for interacting with rest api.
